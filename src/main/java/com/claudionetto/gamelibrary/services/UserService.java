@@ -6,13 +6,9 @@ import com.claudionetto.gamelibrary.exceptions.NotFoundException;
 import com.claudionetto.gamelibrary.mappers.UserMapper;
 import com.claudionetto.gamelibrary.models.User;
 import com.claudionetto.gamelibrary.repositories.UserRepository;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -23,12 +19,16 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    private User findByIdOrThrowNotFoundException(long id){
+        return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User Not Found"));
+    }
+
     public Page<UserResponseDTO> findAll(Pageable pageable){
         return userRepository.findAll(pageable).map(UserMapper::toUserResponseDTO);
     }
 
     public UserResponseDTO findById(Long id){
-        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User Not Found"));
+        User user = findByIdOrThrowNotFoundException(id);
         return UserMapper.toUserResponseDTO(user);
     }
 
@@ -38,7 +38,7 @@ public class UserService {
 
     public void update(Long id, UserRequestDTO userRequestDTO){
 
-        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User Not Found"));
+        User user = findByIdOrThrowNotFoundException(id);
 
         if(userRequestDTO.name() != null) user.setName(userRequestDTO.name());
         if(userRequestDTO.email() != null) user.setEmail(userRequestDTO.email());
@@ -46,6 +46,13 @@ public class UserService {
         if(userRequestDTO.password() != null) user.setPassword(userRequestDTO.password());
 
         userRepository.save(user);
+    }
+
+    public void delete(Long id){
+
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User Not Found"));
+        userRepository.delete(user);
+
     }
 
 
