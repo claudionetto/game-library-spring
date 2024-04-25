@@ -1,7 +1,7 @@
 package com.claudionetto.gamelibrary.mappers;
 
-import com.claudionetto.gamelibrary.dtos.UserRequestDTO;
-import com.claudionetto.gamelibrary.dtos.UserResponseDTO;
+import com.claudionetto.gamelibrary.dtos.requests.UserRequestDTO;
+import com.claudionetto.gamelibrary.dtos.responses.UserResponseDTO;
 import com.claudionetto.gamelibrary.models.User;
 
 public class UserMapper {

@@ -1,8 +1,8 @@
 package com.claudionetto.gamelibrary.controllers;
 
 
-import com.claudionetto.gamelibrary.dtos.UserRequestDTO;
-import com.claudionetto.gamelibrary.dtos.UserResponseDTO;
+import com.claudionetto.gamelibrary.dtos.requests.UserRequestDTO;
+import com.claudionetto.gamelibrary.dtos.responses.UserResponseDTO;
 import com.claudionetto.gamelibrary.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;

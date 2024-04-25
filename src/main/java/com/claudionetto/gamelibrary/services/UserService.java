@@ -1,26 +1,33 @@
 package com.claudionetto.gamelibrary.services;
 
-import com.claudionetto.gamelibrary.dtos.UserRequestDTO;
-import com.claudionetto.gamelibrary.dtos.UserResponseDTO;
-import com.claudionetto.gamelibrary.exceptions.NotFoundException;
+import com.claudionetto.gamelibrary.dtos.requests.UserRequestDTO;
+import com.claudionetto.gamelibrary.dtos.responses.UserResponseDTO;
+import com.claudionetto.gamelibrary.enums.Role;
+import com.claudionetto.gamelibrary.exceptions.UserNotFoundException;
+import com.claudionetto.gamelibrary.exceptions.UserAlreadyExistsException;
 import com.claudionetto.gamelibrary.mappers.UserMapper;
 import com.claudionetto.gamelibrary.models.User;
 import com.claudionetto.gamelibrary.repositories.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     private User findByIdOrThrowNotFoundException(long id){
-        return userRepository.findById(id).orElseThrow(() -> new NotFoundException("User Not Found"));
+        return userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User Not Found"));
     }
 
     public Page<UserResponseDTO> findAll(Pageable pageable){
@@ -33,7 +40,20 @@ public class UserService {
     }
 
     public Long save(UserRequestDTO userRequestDTO){
-        return userRepository.save(UserMapper.toUser(userRequestDTO)).getId();
+
+        if (userRepository.findByUsername(userRequestDTO.username()).isPresent()){
+            throw new UserAlreadyExistsException("Username " + userRequestDTO.username() + " already exists");
+        }
+
+        if (userRepository.findByEmail(userRequestDTO.email()).isPresent()){
+            throw new UserAlreadyExistsException("Email " + userRequestDTO.email() + " already exists");
+        }
+
+
+        User user = UserMapper.toUser(userRequestDTO);
+        user.setPassword(passwordEncoder.encode(userRequestDTO.password()));
+        user.setRoles(List.of(Role.USER));
+        return userRepository.save(user).getId();
     }
 
     public void update(Long id, UserRequestDTO userRequestDTO){
@@ -50,7 +70,7 @@ public class UserService {
 
     public void delete(Long id){
 
-        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User Not Found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFoundException("User Not Found"));
         userRepository.delete(user);
 
     }
