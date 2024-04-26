@@ -16,22 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
-    private final AuthenticationManager authenticationManager;
 
-    public AuthenticationController(AuthenticationService authenticationService, AuthenticationManager authenticationManager) {
+    public AuthenticationController(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
-        this.authenticationManager = authenticationManager;
     }
 
     @PostMapping
     public String authenticate(@Valid @RequestBody AuthRequestDTO authRequestDTO){
-
-        UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(
-                authRequestDTO.username(), authRequestDTO.password());
-
-        Authentication auth = authenticationManager.authenticate(usernamePassword);
-
-        return authenticationService.authenticate(auth);
+        return authenticationService.authenticate(authRequestDTO);
     }
 
 }
