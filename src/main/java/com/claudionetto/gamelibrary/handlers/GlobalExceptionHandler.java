@@ -22,7 +22,7 @@ public class GlobalExceptionHandler{
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(UserNotFoundException.class)
-    public ProblemDetail handleNotFoundException(
+    public ProblemDetail handleUserNotFoundException(
             UserNotFoundException ex, HttpServletRequest request) {
 
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.NOT_FOUND, ex.getMessage());
@@ -35,7 +35,7 @@ public class GlobalExceptionHandler{
 
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(UserAlreadyExistsException.class)
-    public ProblemDetail handleNotFoundException(
+    public ProblemDetail handleUserAlreadyExistsException(
             UserAlreadyExistsException ex, HttpServletRequest request) {
 
         ProblemDetail problemDetail = ProblemDetail.forStatusAndDetail(HttpStatus.CONFLICT, ex.getMessage());

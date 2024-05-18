@@ -1,6 +1,7 @@
 package com.claudionetto.gamelibrary.services;
 
 import com.claudionetto.gamelibrary.dtos.requests.AuthRequestDTO;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -16,14 +17,14 @@ public class AuthenticationService {
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
     }
-    public String authenticate(AuthRequestDTO authRequestDTO){
+    public void authenticate(AuthRequestDTO authRequestDTO, HttpServletResponse response){
 
         UsernamePasswordAuthenticationToken usernamePassword = new UsernamePasswordAuthenticationToken(
                 authRequestDTO.username(), authRequestDTO.password());
 
         Authentication authentication = authenticationManager.authenticate(usernamePassword);
 
-        return jwtService.generateToken(authentication);
+       jwtService.authenticate(authentication, response);
     }
 
 }
